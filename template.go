@@ -30,12 +30,12 @@ import (
 {{range $typename, $values := .TypesAndValues}}
 
 var (
-    _{{$typename}}NameToValue = map[string]{{$typename}} {
+    {{$typename}}NameToValue = map[string]{{$typename}} {
         {{range $values}}"{{.}}": {{.}},
         {{end}}
     }
 
-    _{{$typename}}ValueToName = map[{{$typename}}]string {
+    {{$typename}}ValueToName = map[{{$typename}}]string {
         {{range $values}}{{.}}: "{{.}}",
         {{end}}
     }
@@ -44,7 +44,7 @@ var (
 func init() {
     var v {{$typename}}
     if _, ok := interface{}(v).(fmt.Stringer); ok {
-        _{{$typename}}NameToValue = map[string]{{$typename}} {
+        {{$typename}}NameToValue = map[string]{{$typename}} {
             {{range $values}}interface{}({{.}}).(fmt.Stringer).String(): {{.}},
             {{end}}
         }
@@ -56,7 +56,7 @@ func (r {{$typename}}) MarshalJSON() ([]byte, error) {
     if s, ok := interface{}(r).(fmt.Stringer); ok {
         return json.Marshal(s.String())
     }
-    s, ok := _{{$typename}}ValueToName[r]
+    s, ok := {{$typename}}ValueToName[r]
     if !ok {
         return nil, fmt.Errorf("invalid {{$typename}}: %d", r)
     }
@@ -69,7 +69,7 @@ func (r *{{$typename}}) UnmarshalJSON(data []byte) error {
     if err := json.Unmarshal(data, &s); err != nil {
         return fmt.Errorf("{{$typename}} should be a string, got %s", data)
     }
-    v, ok := _{{$typename}}NameToValue[s]
+    v, ok := {{$typename}}NameToValue[s]
     if !ok {
         return fmt.Errorf("invalid {{$typename}} %q", s)
     }
