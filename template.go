@@ -77,5 +77,9 @@ func (r *{{$typename}}) UnmarshalJSON(data []byte) error {
     return nil
 }
 
+func (r {{$typename}}) String() string {
+	return {{$typename}}ValueToName[r]
+}
+
 {{end}}
 `))
